@@ -7,6 +7,7 @@ package com.udacity.model;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -25,10 +26,9 @@ public class invLineTableModel extends AbstractTableModel {
      
     }
 
-    public List<InvoiceLine> getInvoiceLines() {
+   public List<InvoiceLine> getInvoiceLines() {
         return invoiceLines;
     }
-   
     @Override
     public int getRowCount() {
 return invoiceLines.size();
@@ -90,9 +90,6 @@ return invoiceLines.size();
     return false;
     }
 
-  
-
-   
 
  }
  

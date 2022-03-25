@@ -63,5 +63,8 @@ private InvoiceFrame1 header;
 
     private void setLineTotal(double lineTotal) {
 this.lineTotal = lineTotal;
+  }
+     public String getDataAsCSV() {
+        return "" + getHeader().getInvNum() + "," + getItemName() + "," + getItemPrice() + "," + getItemCount();
     }
 }

@@ -5,6 +5,8 @@
  */
 package com.udacity.model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -53,7 +55,11 @@ private ArrayList<InvoiceLine> lines;
 
     @Override
     public String toString() {
-        return "InvoiceHeader{" + "invNum=" + invNum + ", customerName=" + customerName + ", invDate=" + invDate + '}';
+        String str="InvoiceFram1{" + "invNum=" + invNum + ", customerName=" + customerName + ", invDate=" + invDate + '}' ;
+       for(InvoiceLine line: getLines()){
+           str += "\n\t" + line;
+       } 
+        return str;
     }
 
     public ArrayList<InvoiceLine> getLines() {
@@ -74,8 +80,12 @@ private ArrayList<InvoiceLine> lines;
         return total;
     }
 
-     public void addInvoice(InvoiceLine line){
+     public void addInvLine(InvoiceLine line){
         getLines().add(line);
         
      }
+ public String getDataAsCSV() {
+        DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        return "" + getInvNum() + "," + df.format(getInvDate()) + "," + getCustomerName();
+}
 }

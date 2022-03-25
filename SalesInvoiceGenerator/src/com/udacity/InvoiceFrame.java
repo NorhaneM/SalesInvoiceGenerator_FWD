@@ -16,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -104,6 +105,11 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
 
         deleteInvBtn.setText("Delete Invoice");
         deleteInvBtn.setActionCommand("DeleteInvoice");
+        deleteInvBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteInvBtnActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Invoice Number");
 
@@ -268,6 +274,10 @@ public class InvoiceFrame extends javax.swing.JFrame implements ActionListener, 
         // TODO add your handling code here:
     }//GEN-LAST:event_createInvBtnActionPerformed
 
+    private void deleteInvBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteInvBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_deleteInvBtnActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -338,19 +348,16 @@ case "CreateNewInvoice":
     
     displayNewInvoiceDialog();
     break;
-case "Delete Invoice":
+case "DeleteInvoice":
+     deleteInvoice();
     break;
 case "CreateNewLine":
     displayNewLineDialog();
     break;
     
 case "DeleteLine":
-    
+    deleteLineBtn();
     break;
- case "Save":
-     break;
- case "Cancel":
-     break;
  case "LoadFile":
      LoadFile();
      break;
@@ -420,7 +427,7 @@ case "DeleteLine":
  invHeaderTableModel = new invHeaderTableModel(invoicesArray);
  invoicesTable.setModel(invHeaderTableModel);
  invoicesTable.validate();
-                
+
                 }
                 
             } catch (Exception ex){
@@ -428,10 +435,48 @@ case "DeleteLine":
             }
                      
         }
+
+     displayInvoices();
     }
 
     private void savedata() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+String headers = "";
+        String lines = "";
+        for (InvoiceFrame1 header : invoicesArray) {
+            headers += header.getDataAsCSV();
+            headers += "\n";
+            for (InvoiceLine line : header.getLines()) {
+                lines += line.getDataAsCSV();
+                lines += "\n";
+            }
+        }
+        JOptionPane.showMessageDialog(this, "Please, select file to save header data!", "Attention", JOptionPane.WARNING_MESSAGE);
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showSaveDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File headerFile = fileChooser.getSelectedFile();
+            try {
+                FileWriter hFW = new FileWriter(headerFile);
+                hFW.write(headers);
+                hFW.flush();
+                hFW.close();
+
+                JOptionPane.showMessageDialog(this, "Please, select file to save lines data!", "Attention", JOptionPane.WARNING_MESSAGE);
+                result = fileChooser.showSaveDialog(this);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File linesFile = fileChooser.getSelectedFile();
+                    FileWriter lFW = new FileWriter(linesFile);
+                    lFW.write(lines);
+                    lFW.flush();
+                    lFW.close();
+                }
+                                           JOptionPane.showMessageDialog(null, "File Saved Successfully ! ");
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
     }
 private InvoiceFrame1 findInvoiceByNum(int invNum){
     InvoiceFrame1 header = null;
@@ -464,8 +509,47 @@ if (selectedRowIndex >= 0){
     
 }
     }
+ private void deleteInvoice() {
+        int invIndex = invoicesTable.getSelectedRow();
+        InvoiceFrame1 header = invHeaderTableModel.getInvoicesArray().get(invIndex);
+        invHeaderTableModel.getInvoicesArray().remove(invIndex);
+        invHeaderTableModel.fireTableDataChanged();
+        invLineTableModel = new invLineTableModel(new ArrayList<InvoiceLine>());
+        invLineTable.setModel(invLineTableModel);
+        invLineTableModel.fireTableDataChanged();
+        custNameTF.setText("");
+        invDateTF.setText("");
+        jLabel3.setText("");
+        invTotalLbl.setText("");
+        displayInvoices();
+             JOptionPane.showMessageDialog(null, "Invoice Deleted Successfully ! ");
+ 
 
-    private void displayNewInvoiceDialog() {
+     }  
+
+   
+    private void deleteLineBtn() {
+       
+           
+        int lineIndex = invLineTable.getSelectedRow();
+        InvoiceLine line = invLineTableModel.getInvoiceLines().get(lineIndex);
+           invLineTableModel.getInvoiceLines().remove(lineIndex);
+            invHeaderTableModel.fireTableDataChanged();
+        invLineTableModel.fireTableDataChanged();
+                invTotalLbl.setText("" + line.getHeader().getInvTotal());
+         JOptionPane.showMessageDialog(null, "Line Deleted Successfully ! ");
+          displayInvoices();
+        }      
+      
+       
+       
+     
+     private void displayInvoices(){
+         for (InvoiceFrame1 header :invoicesArray) {
+             System.out.println(header);
+         }
+     }
+private void displayNewInvoiceDialog() {
 headerDialog  = new InvoiceHeaderDialog(this);
 headerDialog.setVisible(true);
        
@@ -496,7 +580,7 @@ try {
     invHeaderTableModel.fireTableDataChanged();
 } catch(ParseException ex) {
   ex.printStackTrace();
-  
+  displayInvoices();
 }
     }
     
@@ -529,9 +613,11 @@ double itemPrice = Double.parseDouble(itemPriceStr);
  int headerIndex = invoicesTable.getSelectedRow();
         InvoiceFrame1 invoice = invHeaderTableModel.getInvoicesArray().get(headerIndex); 
         InvoiceLine invoiceLine = new InvoiceLine(itemName, itemPrice, itemCount, invoice);
-    //invoice.addInvLine(invoiceLine);
-        invLineTableModel.getInvoiceLines().add(invoiceLine);
+    invoice.addInvLine(invoiceLine);
         invLineTableModel.fireTableDataChanged();
+        invHeaderTableModel.fireTableDataChanged();
+        invTotalLbl.setText("" + invoice.getInvTotal());
+      displayInvoices();   
     }
 
   
