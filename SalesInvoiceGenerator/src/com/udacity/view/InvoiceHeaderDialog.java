@@ -5,7 +5,6 @@
  */
 package com.udacity.view;
 
-import com.udacity.InvoiceFrame;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -35,8 +34,8 @@ private JTextField custNameField;
  
         okBtn.setActionCommand("createInvOK");
         cancelBtn.setActionCommand("createInvCancel");
-       okBtn.addActionListener(frame);
-         cancelBtn.addActionListener(frame);
+       okBtn.addActionListener(frame.getListener());
+         cancelBtn.addActionListener(frame.getListener());
         setLayout(new GridLayout(3, 2));
         
         add(invDateLbl);

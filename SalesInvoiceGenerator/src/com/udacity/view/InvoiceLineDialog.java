@@ -5,7 +5,6 @@
  */
 package com.udacity.view;
 
-import com.udacity.InvoiceFrame;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -42,8 +41,8 @@ public class InvoiceLineDialog extends JDialog{
         okBtn.setActionCommand("createLineOK");
         cancelBtn.setActionCommand("createLineCancel");
         
-        okBtn.addActionListener(frame);
-        cancelBtn.addActionListener(frame);
+        okBtn.addActionListener(frame.getListener());
+        cancelBtn.addActionListener(frame.getListener());
         setLayout(new GridLayout(4, 2));
         
         add(itemNameLbl);
